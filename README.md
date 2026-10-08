@@ -1,66 +1,195 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SipPulseTestes
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplicacao Laravel 10 com PHP e MySQL. O ambiente de desenvolvimento usa Docker para que PHP, Apache, Composer e MySQL sejam executados em containers.
 
-## About Laravel
+## 1. O que e Docker?
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Docker executa processos isolados chamados containers. Um container e criado a partir de uma imagem, que e um pacote com o sistema e as dependencias necessarias.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Neste projeto:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- `app` e o container da aplicacao: PHP 8.2 + Apache + codigo Laravel.
+- `db` e o container do banco: MySQL 8.
+- `docker-compose.yml` descreve como esses containers devem ser criados e conectados.
+- `Dockerfile` ensina como construir a imagem da aplicacao.
+- `volume` guarda dados que precisam sobreviver a parada ou recriacao dos containers.
 
-## Learning Laravel
+Docker Compose e o comando usado para operar varios containers juntos. O comando correto e `docker compose`, nao `composer up`. Composer e outra ferramenta: ele instala dependencias PHP do Laravel.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 2. Pre-requisitos
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Instale o Docker Engine e o plugin Docker Compose. Confira:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+docker --version
+docker compose version
+```
 
-## Laravel Sponsors
+No Linux, talvez seu usuario precise estar no grupo `docker` para executar comandos sem `sudo`.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 3. Primeira execucao do projeto
 
-### Premium Partners
+A primeira execucao cria as imagens, os containers e o banco. Na raiz do projeto:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```bash
+cp .env.example .env
+docker compose up -d --build
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate
+```
 
-## Contributing
+Depois, abra http://localhost:8000.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+O `--build` e necessario quando a imagem ainda nao existe ou quando o `Dockerfile` mudou. A opcao `-d` significa executar em segundo plano, liberando o terminal.
 
-## Code of Conduct
+## 4. Rotina diaria
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Comecar o trabalho
 
-## Security Vulnerabilities
+Abra um terminal na pasta do projeto e execute:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+docker compose start
+```
 
-## License
+Se os containers ainda nao existirem, use:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+docker compose up -d
+```
+
+Confira o estado:
+
+```bash
+docker compose ps
+```
+
+Acesse http://localhost:8000.
+
+### Durante o desenvolvimento
+
+O codigo da pasta local esta montado no container. Portanto, alteracoes em PHP, Blade, rotas e migrations aparecem sem reconstruir a imagem.
+
+Comandos Laravel sao executados dentro do container da aplicacao:
+
+```bash
+docker compose exec app php artisan route:list
+docker compose exec app php artisan migrate
+docker compose exec app php artisan migrate:status
+docker compose exec app php artisan test
+```
+
+Para instalar ou atualizar uma dependencia PHP:
+
+```bash
+docker compose exec app composer require nome/do-pacote
+docker compose exec app composer update
+```
+
+Depois de alterar `composer.json` ou o `Dockerfile`, reconstrua a imagem:
+
+```bash
+docker compose up -d --build
+```
+
+Para acompanhar problemas:
+
+```bash
+docker compose logs -f app
+docker compose logs -f db
+```
+
+Pressione `Ctrl+C` para sair da visualizacao dos logs. Isso nao para os containers.
+
+### Encerrar o trabalho
+
+Antes de fechar o computador, voce pode parar os containers:
+
+```bash
+docker compose stop
+```
+
+No dia seguinte, `docker compose start` inicia os mesmos containers novamente. O banco continua preservado.
+
+Outra opcao e remover os containers, mantendo os volumes e os dados:
+
+```bash
+docker compose down
+```
+
+No proximo inicio, o Compose criara containers novos usando os mesmos dados do banco.
+
+## 5. Comandos Docker essenciais
+
+| Comando | Funcao |
+| --- | --- |
+| `docker compose up -d` | Cria, inicia e conecta os servicos |
+| `docker compose up -d --build` | Reconstrói a imagem e inicia os servicos |
+| `docker compose start` | Inicia containers ja existentes |
+| `docker compose stop` | Para containers sem remove-los |
+| `docker compose down` | Para e remove containers e rede, preservando volumes |
+| `docker compose ps` | Mostra o estado dos servicos |
+| `docker compose logs -f app` | Mostra logs da aplicacao em tempo real |
+| `docker compose exec app comando` | Executa um comando dentro do container `app` |
+| `docker compose config` | Valida a configuracao do Compose |
+
+## 6. Containers, imagens e volumes
+
+O container e temporario. Ele pode ser removido e recriado sem problema. O volume e usado para dados persistentes:
+
+- `mysql_data`: dados do MySQL.
+- `vendor`: dependencias instaladas pelo Composer.
+- `storage`: logs e arquivos gerados pelo Laravel.
+- `framework_cache`: cache gravavel do Laravel.
+
+Para listar volumes:
+
+```bash
+docker volume ls
+```
+
+Para apagar containers e tambem o banco local:
+
+```bash
+docker compose down -v
+```
+
+Use `down -v` somente quando quiser recriar o banco do zero. Essa operacao e destrutiva.
+
+## 7. Banco de dados
+
+De dentro do Docker, o Laravel acessa o MySQL pelo hostname `db`, que e o nome do servico no Compose. Nao use `127.0.0.1` para a conexao entre containers.
+
+Para conectar ao MySQL:
+
+```bash
+docker compose exec db mysql -u sippSELECT user, host FROM mysql.user;
+Na sua maquina, o MySQL tambem esta exposto em `localhost:3306`.
+
+## 8. Como iniciar um projeto novo com Docker?
+
+O fluxo comum e:
+
+1. Criar o projeto e definir as dependencias da aplicacao.
+2. Criar um `Dockerfile` com o runtime, neste caso PHP e Apache.
+3. Criar um `docker-compose.yml` para a aplicacao e servicos auxiliares, como banco e Redis.
+4. Criar um `.dockerignore` para nao enviar arquivos locais desnecessarios ao build.
+5. Subir o ambiente com `docker compose up -d --build`.
+6. Executar comandos de inicializacao dentro do container com `docker compose exec`.
+7. Desenvolver usando o codigo montado por volume.
+8. Parar com `docker compose stop` ou remover os containers com `docker compose down`.
+
+É comum usar Docker desde o inicio de um projeto. Isso ajuda a manter a mesma versao de PHP, extensoes e banco para todas as pessoas da equipe. Nao e obrigatorio: voce tambem pode desenvolver com PHP, Composer e MySQL instalados diretamente na maquina. A vantagem do Docker e tornar esse ambiente reproduzivel.
+
+
+Docker administra o ambiente de execucao:
+
+```bash
+docker compose up -d
+docker compose exec app php artisan migrate
+```
+
+Neste projeto, o Composer roda dentro do container para que a maquina local nao precise ter PHP instalado.
+
+-------------
+

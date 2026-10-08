@@ -1,0 +1,55 @@
+services:
+# CONFIGURAÇÕES DO CONTAINER DO PHP
+  app:
+  # Informando que vai usar a imagem q será construída a partir do Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www/html
+      - vendor:/var/www/html/vendor
+      - storage:/var/www/html/storage
+      - framework_cache:/var/www/html/bootstrap/cache
+
+    # variáveis de ambiente do container
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: 172.20.0.2
+      DB_PORT: 3306
+      DB_DATABASE: sippulse
+      DB_USERNAME: sippulse
+      DB_PASSWORD: 8250
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - "3306:3306"
+
+    # variáveis de ambiente do container
+    environment:
+      MYSQL_DATABASE: sippulse
+      MYSQL_USER: sippulse
+      MYSQL_PASSWORD: 8250
+      MYSQL_ROOT_PASSWORD: 8250
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql_data:
+  vendor:
+  storage:
+  framework_cache:

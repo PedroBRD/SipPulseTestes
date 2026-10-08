@@ -85,6 +85,8 @@
             <td>Adicionar Créditos</td>
             <td><a href="{{ route('addCredit') }}">Adicionar</a></td>
         </tr>
-    </table>
+    </table><br><br>
+
+    <a href="{{ route('home.index') }}">Voltar</a>
 </body>
 </html>

@@ -3,246 +3,113 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+
 
 class UserController extends Controller
 {
-    public function addDid() {
-        //dd('Dentro da addDid');     config('services.sipPulseTeste.dominio')
-        //dd(getenv('SIPP_EXT_LOGIN'));
-        return view('adddid');
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $users = User::all();
+        //dd($users);
+        //dd('dentro da index');
+        return view('Users/homeUsers', compact('users'));
     }
 
-    public function saveDid(Request $request) {
-        //dd('dentro da Save DID');
-        $domain = config('services.sipPulseTeste.dominio');
-        //$endpoint = '/SipPulse/DidWS?wsdl=';
-        //dd($domain . $endpoint);
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view('Users/createUser');
+    }
 
-        $curl = curl_init();
-        //dd($curl);
-        curl_setopt_array($curl, array(
-        CURLOPT_URL => $domain . '/SipPulse/DidWS?wsdl=',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS =>'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.ws.sippulse.voffice.com.br/">
-            <soapenv:Header/>
-            <soapenv:Body>
-                <ser:insertDid>
-                    <did>
-                        <accountCode>'.$request->accountCode.'</accountCode>
-                        <aliasUsername>'.$request->aliasUsername.'</aliasUsername>
-                        <username>'.$request->username.'</username>
-                        <domain>'. getenv('SIPP_EXT_DOMAIN') .'</domain>
-                    </did>
-                    <principal>
-                        <login>'. getenv('SIPP_EXT_LOGIN') .'</login>
-                        <password>'. getenv('SIPP_EXT_PASS') .'</password>
-                    </principal>
-                </ser:insertDid>
-            </soapenv:Body>
-        </soapenv:Envelope>',
-        CURLOPT_HTTPHEADER => array(
-            'Content-Type: text/xml'
-        ),
-        ));
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $data = $request->all();
+        //dd($data);
 
-        $response = curl_exec($curl);
-        //dd($response);
-        curl_close($curl);
-        //echo $response;
+        $user = new User;
+        $user->name = $data['name'];
+        $user->email = $data['email'];
+        $user->password = bcrypt($data['password']);
 
-        if(is_null('didId')) {
-            echo 'O DID não foi criado.';
+        $user->save();
+        return redirect()->back();
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show($id)
+    {
+        //dd('dentro da show');
+        $user = User::find($id);
+
+        if(!isset($user) || is_null($user)) {
+            dd('Usuário não existe');
+        }
+        //dd($user);
+        return view('Users/showUsers', compact('user'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $user = User::findOrFail($id);
+        if(!isset($user) || is_null($user)) {
+            dd('Usuário não existe');
+        }
+        return view('Users/editUsers', compact('user'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $user = User::findOrFail($id);
+        //dd($user->get('password'));
+        //dd($user);
+        //dd('dentro da update');
+
+        $data = $request->all();
+        //dd($request->password);
+
+        //trata a senha, altera se for definada uma nova, ou ignora se não foi alterado
+        if ($data['password'] !== null || !empty($data['password'])){
+            //dd('aqui');
+            $data['password'] = Hash::make($data['password']);
+        } /*else {
+            unset($data['password']);
+        }*/
+        //dd($data);
+
+        $user->update($data);
+        return redirect()->route('users.index');
+
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $user = User::find($id);
+        if(!isset($user) || is_null($user)) {
+            dd('Usuário não existe');
         } else {
-            echo 'O DID foi criado com sucesso. O ID é ' . $response;
+            $user->delete();
+            return redirect()->route('users.index');
         }
-    }
-
-    public function findDids() {
-        return view('listdids');
-    }
-
-    public function listDid(Request $request) {
-        $domain = config('services.sipPulseTeste.dominio');
-
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-        CURLOPT_URL => $domain . '/SipPulse/DidWS?wsdl=',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS =>'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.ws.sippulse.voffice.com.br/">
-        <soapenv:Header/>
-        <soapenv:Body>
-            <ser:listByAcc>
-                <accountCode>'.$request->accountCode.'</accountCode>
-                <principal>
-                    <login>'. getenv('SIPP_EXT_LOGIN') .'</login>
-                    <password>'. getenv('SIPP_EXT_PASS') .'</password>
-                </principal>
-            </ser:listByAcc>
-        </soapenv:Body>
-        </soapenv:Envelope>',
-        CURLOPT_HTTPHEADER => array(
-            'Content-Type: text/xml'
-        ),
-        ));
-
-        $response = curl_exec($curl);
-        curl_close($curl);
-
-        $xml = simplexml_load_string($response);
-
-        if ($xml === false) {
-            return back()->with('error', 'Não foi possível Listar os DIDs.');
-        }
-
-        $dids = $xml->xpath('//did');
-        dd($dids);
-    }
-
-    public function listDomain() {
-        //dd('Dentro da listagem de domínios');
-        $domain = config('services.sipPulseTeste.dominio');
-
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-        CURLOPT_URL => $domain . '/SipPulse/DomainWS?wsdl=',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS =>'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.ws.sippulse.voffice.com.br/">
-            <soapenv:Header/>
-            <soapenv:Body>
-                <ser:listDomains>
-                    <principal>
-                        <login>'. getenv('SIPP_EXT_LOGIN') .'</login>
-                        <password>'. getenv('SIPP_EXT_PASS') .'</password>
-                    </principal>
-                </ser:listDomains>
-            </soapenv:Body>
-        </soapenv:Envelope>',
-        CURLOPT_HTTPHEADER => array(
-            'Content-Type: text/xml'
-        ),
-        ));
-
-        //dd($curl);
-        $response = curl_exec($curl);
-        curl_close($curl);
-
-        //dd($response);
-        $xml = simplexml_load_string($response);
-
-        if ($xml === false) {
-            return back()->with('error', 'Não foi Listar os Domínios');
-        }
-
-        $domains = $xml->xpath('//domain');
-        dd($domains);
-    }
-
-    public function addCredit() {
-        return view('insertcredit');
-    }
-
-    public function insertCredit(Request $request) {
-        //dd('Dentro da adicionar credito');
-
-        $domain = config('services.sipPulseTeste.dominio');
-
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-        CURLOPT_URL => $domain . '/SipPulse/SubscriberWS?wsdl=',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS =>'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.ws.sippulse.voffice.com.br/">
-        <soapenv:Header/>
-        <soapenv:Body>
-            <ser:addCredit>
-                <username>'.$request->username.'</username>
-                <domain>'. getenv('SIPP_EXT_DOMAIN') .'</domain>
-                <value>'.$request->value.'</value>
-                <obs>'.$request->obs.'</obs>
-                
-                <principal>
-                    <login>'. getenv('SIPP_EXT_LOGIN') .'</login>
-                    <password>'. getenv('SIPP_EXT_PASS') .'</password>
-                </principal>
-            </ser:addCredit>
-        </soapenv:Body>
-        </soapenv:Envelope>',
-        CURLOPT_HTTPHEADER => array(
-            'Content-Type: text/xml'
-        ),
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-        //dd($response);
-        //echo $response;
-
-        if(is_null($response)) {
-            echo "Não foi possível adicionar os créditos";
-        } else {
-            $curl = curl_init();
-
-            curl_setopt_array($curl, array(
-            CURLOPT_URL => $domain . '/SipPulse/SubscriberWS?wsdl=',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS =>'<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.ws.sippulse.voffice.com.br/">
-            <soapenv:Header/>
-            <soapenv:Body>
-                <ser:retrieveCredit>
-                    <username>'.$request->username.'</username>
-                    <domain>'. getenv('SIPP_EXT_DOMAIN') .'</domain>
-                    <principal>
-                        <login>'. getenv('SIPP_EXT_LOGIN') .'</login>
-                        <password>'. getenv('SIPP_EXT_PASS') .'</password>
-                    </principal>
-                </ser:retrieveCredit>
-            </soapenv:Body>
-            </soapenv:Envelope>',
-            CURLOPT_HTTPHEADER => array(
-                'Content-Type: text/xml'
-            ),
-            ));
-
-            $response = curl_exec($curl);
-            curl_close($curl);
-
-            echo "Créditos adicionados com sucesso. O valor do seu Saldo é de R$" . $response . ".";
-
-            //return redirect()->route('home');
-            
-        }
-
     }
 }

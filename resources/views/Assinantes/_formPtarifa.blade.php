@@ -5,9 +5,11 @@
             <input type="text" id="rateId" name="rateId" placeholder="ID da tarifa associada ao plano" required><br>
 
             <label for="prepaid">O plano é Pré-Pago? </label>
+            <input type="hidden" name="prepaid" value="0">
             <input type="checkbox" id="prepaid" name="prepaid" value=1><br>
 
             <label for="blockCallsWithoutRate">Bloquear Chamadas para Destinos sem Tarifa? </label>
+            <input type="hidden" name="blockCallsWithoutRate" value="0">
             <input type="checkbox" id="blockCallsWithoutRate" name="blockCallsWithoutRate" value=1><br> 
 
             <label for="txConnection">Taxa de Conexão: </label>
