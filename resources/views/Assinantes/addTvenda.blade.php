@@ -1,16 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Incluir Tarifa de Vendas</title>
-</head>
-<body>
-    <h2>Inclusão de Tarifa de Vendas</h2>
-    <div>
-        <form action="{{ route('saveTvendas') }}" method='POST'>
-            @csrf 
-            @method('POST')
+@extends('layouts.app')
+
+@section('title', 'Incluir Tarifa de Vendas | SipPulseTestes')
+
+@section('content')
+    <header class="topbar">
+        <a class="brand" href="{{ route('home.index') }}">SipPulseTestes</a>
+        <a class="button button-secondary" href="{{ route('homeTvendas') }}">Tarifas de Vendas</a>
+    </header>
+    <main class="page">
+        <h1 class="page-heading">Inclusão de Tarifa de Vendas</h1>
+        <section class="panel">
+            <form action="{{ route('saveTvendas') }}" method='POST'>
+                @csrf
+                @method('POST')
             <label for="name">Nome da Tarifa: </label>
             <input type="text" id="name" name="name" Required><br>
 
@@ -38,11 +40,11 @@
             <label for="txDiscard">Taxa de Descarte: </label>
             <input type="text" name="txDiscard" id="txDiscard"><br>
 
-            <button type="submit">Cadastrar</button><br>
+                <button class="button" type="submit">Cadastrar</button><br>
 
-            <a href="{{ route('homeTvendas') }}">Voltar</a>
+                <a class="back-link" href="{{ route('homeTvendas') }}">Voltar</a>
 
-        </form>
-    </div>
-</body>
-</html>
+            </form>
+        </section>
+    </main>
+@endsection

@@ -1,52 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciamento de Usuários</title>
-</head>
-<body>
-    <h2>Gerenciamento de Usuários</h2><br>
+@extends('layouts.app')
 
-    <a href="{{ route('users.create') }}" class="btn btn-success">Criar novo Usuário</a><br><br>
+@section('title', 'Gerenciamento de Usuários | SipPulseTestes')
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>E-mail</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($users as $user)
-                <tr>
-                    <td>{{ $user->id }}</td>
-                    <td>{{ $user->name }}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>
-                        <a href="{{ route('users.show', $user->id) }}">Visualizar</a>
+@section('content')
+    <header class="topbar">
+        <a class="brand" href="{{ route('home.index') }}">SipPulseTestes</a>
+        <a class="button button-secondary" href="{{ route('home.index') }}">Início</a>
+    </header>
 
-                        <a href="{{ route('users.edit', $user->id) }}">Editar</a>
+    <main class="page">
+        <h1 class="page-heading">Gerenciamento de Usuários</h1>
+        <section class="panel" aria-label="Lista de usuários">
+            <p style="margin: 0 0 1rem;">
+                <a href="{{ route('users.create') }}" class="button">Novo Usuário</a>
+            </p>
 
-                        <form action="{{ route('users.delete', $user->id) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit">Exluir</button>
-                        </form>
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="3">Nenhum registro encontrado</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Nome</th>
+                            <th scope="col">E-mail</th>
+                            <th scope="col">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($users as $user)
+                            <tr>
+                                <td>{{ $user->id }}</td>
+                                <td>{{ $user->name }}</td>
+                                <td>{{ $user->email }}</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a class="text-link" href="{{ route('users.show', $user->id) }}">Visualizar</a>
+                                        <a class="text-link" href="{{ route('users.edit', $user->id) }}">Editar</a>
+                                        <form action="{{ route('users.delete', $user->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="button button-secondary" type="submit">Excluir</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4">Nenhum registro encontrado</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-    <a href="{{ route('home.index') }}">Voltar</a>
-
-
-</body>
-</html>
+        <a class="back-link" href="{{ route('home.index') }}">Voltar ao início</a>
+    </main>
+@endsection

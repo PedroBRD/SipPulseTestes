@@ -1,4 +1,4 @@
-            <label for="name">Nome do Plano de Tarifas: </label>
+            <label for="name">Nome do Plano de Tarifas:</label>
             <input type="text" id="name" name="name" required><br>
 
             <label for="rateId">ID da Tarifa (RateId): </label>

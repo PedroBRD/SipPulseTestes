@@ -1,23 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador Tarifa de Vendas</title>
-</head>
-<body>
-    <h3>Incluir Tarifa de Vendas</h3>
-    <a href="{{ route('addTvenda') }}">Incluir</a><br><br>
+@extends('layouts.app')
 
+@section('title', 'Tarifas de Vendas | SipPulseTestes')
 
-    <h3>Listar Tarifa de Vendas</h3>
-    <a href="{{ route('listTvenda') }}">Listar</a><br><br>
-
-
-    <h3>Excluir Tarifa de Vendas</h3>
-    <a href="{{ route('deleteTvenda') }}">Excluir</a><br><br><br>
-
-
-    <br><a href="{{ route('home') }}">Voltar</a>
-</body>
-</html>
+@section('content')
+    <header class="topbar">
+        <a class="brand" href="{{ route('home.index') }}">SipPulseTestes</a>
+        <a class="button button-secondary" href="{{ route('home') }}">Painel SipPulse</a>
+    </header>
+    <main class="page">
+        <h1 class="page-heading">Tarifas de Vendas</h1>
+        <section class="action-list">
+            <article class="action-card"><h2>Incluir tarifa</h2><a class="button" href="{{ route('addTvenda') }}">Incluir</a></article>
+            <article class="action-card"><h2>Listar tarifas</h2><a class="button" href="{{ route('listTvenda') }}">Listar</a></article>
+            <article class="action-card"><h2>Excluir tarifa</h2><a class="button" href="{{ route('deleteTvenda') }}">Excluir</a></article>
+        </section>
+        <a class="back-link" href="{{ route('home') }}">Voltar ao painel SipPulse</a>
+    </main>
+@endsection

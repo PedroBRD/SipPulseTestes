@@ -1,21 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edição de Usuários</title>
-</head>
-<body>
-    <form action="{{ route('users.update', $user->id) }}" method="POST">
-        @csrf 
-        @method('PUT')
-        
-        @include('Users/_formUsers')
+@extends('layouts.app')
 
-        <button type="submit">Salvar Alterações</button>
-    </form>
+@section('title', 'Editar Usuário | SipPulseTestes')
 
-    <a href="{{ route('users.index') }}">Voltar</a>
-    
-</body>
-</html>
+@section('content')
+    <header class="topbar">
+        <a class="brand" href="{{ route('home.index') }}">SipPulseTestes</a>
+        <a class="button button-secondary" href="{{ route('users.index') }}">Usuários</a>
+    </header>
+    <main class="page">
+        <h1 class="page-heading">Editar Usuário</h1>
+        <section class="panel">
+            <form action="{{ route('users.update', $user->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                @include('Users/_formUsers')
+                <button class="button" type="submit">Salvar Alterações</button>
+            </form>
+        </section>
+        <a class="back-link" href="{{ route('users.index') }}">Voltar para usuários</a>
+    </main>
+@endsection

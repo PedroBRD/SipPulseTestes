@@ -1,27 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador Plano de Tarifas</title>
-</head>
-<body>
-    <h3>Incluir Plano de Tarifas</h3>
-    <a href="{{ route('addPtarifa') }}">Incluir</a>
+@extends('layouts.app')
 
+@section('title', 'Planos de Tarifas | SipPulseTestes')
 
-    <h3>Listar Plano de Tarifas</h3>
-    <a href="{{ route('listPtarifa') }}">Listar</a>
-
-
-    <h3>Alterar Plano de Tarifas</h3>
-    <a href="{{ route('alterPtarifa') }}">Alterar</a>
-
-
-    <h3>Deletar Plano de Tarifas</h3>
-    <a href="{{ route('deletePtarifa') }}">Deletar</a>
-
-    
-    <br><br><br><a href="{{ route('home') }}">Voltar</a>
-</body>
-</html>
+@section('content')
+    <header class="topbar">
+        <a class="brand" href="{{ route('home.index') }}">SipPulseTestes</a>
+        <a class="button button-secondary" href="{{ route('home') }}">Painel SipPulse</a>
+    </header>
+    <main class="page">
+        <h1 class="page-heading">Planos de Tarifas</h1>
+        <section class="action-list">
+            <article class="action-card"><h2>Incluir plano</h2><a class="button" href="{{ route('addPtarifa') }}">Incluir</a></article>
+            <article class="action-card"><h2>Listar planos</h2><a class="button" href="{{ route('listPtarifa') }}">Listar</a></article>
+            <article class="action-card"><h2>Alterar plano</h2><a class="button" href="{{ route('alterPtarifa') }}">Alterar</a></article>
+            <article class="action-card"><h2>Excluir plano</h2><a class="button" href="{{ route('deletePtarifa') }}">Excluir</a></article>
+        </section>
+        <a class="back-link" href="{{ route('home') }}">Voltar ao painel SipPulse</a>
+    </main>
+@endsection

@@ -1,20 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Assinantes</title>
-</head>
-<body>
-    <h3>Criar Assinante</h3>
-    <a href="{{ route('addAssinante') }}">Criar</a><br>
+@extends('layouts.app')
 
-    <h3>Remover Assinantes</h3>
-    <a href="{{ route('deleteAssinante') }}">Remover</a><br>
-    
-    <h3>Alterar Senha de um Assinante</h3>
-    <a href="{{ route('changePass') }}">Alterar</a><br><br>
+@section('title', 'Assinantes | SipPulseTestes')
 
-    <a href="{{ route('home') }}">Voltar</a>
-</body>
-</html>
+@section('content')
+    <header class="topbar">
+        <a class="brand" href="{{ route('home.index') }}">SipPulseTestes</a>
+        <a class="button button-secondary" href="{{ route('home') }}">Painel SipPulse</a>
+    </header>
+    <main class="page">
+        <h1 class="page-heading">Gerenciamento de Assinantes</h1>
+        <section class="action-list">
+            <article class="action-card"><h2>Criar assinante</h2><a class="button" href="{{ route('addAssinante') }}">Criar</a></article>
+            <article class="action-card"><h2>Remover assinante</h2><a class="button" href="{{ route('deleteAssinante') }}">Remover</a></article>
+            <article class="action-card"><h2>Alterar senha</h2><a class="button" href="{{ route('changePass') }}">Alterar</a></article>
+        </section>
+        <a class="back-link" href="{{ route('home') }}">Voltar ao painel SipPulse</a>
+    </main>
+@endsection

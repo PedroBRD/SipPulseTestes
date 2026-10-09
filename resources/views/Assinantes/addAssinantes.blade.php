@@ -1,15 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adição de Assinante</title>
-</head>
-<body>
-    <div>
-        <form action="{{ route('saveAssinante') }}" method='PUT'>
-            @csrf 
-            @method('POST')
+@extends('layouts.app')
+
+@section('title', 'Adicionar Assinante | SipPulseTestes')
+
+@section('content')
+    <header class="topbar">
+        <a class="brand" href="{{ route('home.index') }}">SipPulseTestes</a>
+        <a class="button button-secondary" href="{{ route('homeAssinantes') }}">Assinantes</a>
+    </header>
+    <main class="page">
+        <h1 class="page-heading">Adicionar Assinante</h1>
+        <section class="panel">
+            <form action="{{ route('saveAssinante') }}" method='PUT'>
+                @csrf
+                @method('POST')
 
             <label for="username">Nome do Assinante (Username): *</label>
             <input type="text" id="username" name="username" required><br>
@@ -84,10 +87,10 @@
 
 
 
-            <button type="submit">Criar</button><br>
+                <button class="button" type="submit">Criar</button><br>
 
-            <a href="{{ route('homeAssinantes') }}">Voltar</a>
-        </form>
-    </div>
-</body>
-</html>
+                <a class="back-link" href="{{ route('homeAssinantes') }}">Voltar</a>
+            </form>
+        </section>
+    </main>
+@endsection
