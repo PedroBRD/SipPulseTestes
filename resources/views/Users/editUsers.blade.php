@@ -14,6 +14,9 @@
                 @csrf
                 @method('PUT')
                 @include('Users/_formUsers')
+
+                <a href="{{ route('users.roles.edit', $user) }}" class="button button-secondary">Gerenciar Cargo do Usuário</a><br>
+
                 <button class="button" type="submit">Salvar Alterações</button>
             </form>
         </section>

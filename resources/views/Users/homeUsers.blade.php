@@ -12,7 +12,13 @@
         <h1 class="page-heading">Gerenciamento de Usuários</h1>
         <section class="panel" aria-label="Lista de usuários">
             <p style="margin: 0 0 1rem;">
+                @can('create')
                 <a href="{{ route('users.create') }}" class="button">Novo Usuário</a>
+                @endcan
+
+                @role('super-adm')
+                <a href="{{ route('roles.index') }}" class="button button-secondary">Cargos e Permissões</a>
+                @endrole
             </p>
 
             <div class="table-wrap">
@@ -33,13 +39,20 @@
                                 <td>{{ $user->email }}</td>
                                 <td>
                                     <div class="table-actions">
+                                        @can('view')
                                         <a class="text-link" href="{{ route('users.show', $user->id) }}">Visualizar</a>
+                                        @endcan
+                                        @can('edit')
                                         <a class="text-link" href="{{ route('users.edit', $user->id) }}">Editar</a>
+                                        @endcan
+                                        @can('delete')
                                         <form action="{{ route('users.delete', $user->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
                                             <button class="button button-secondary" type="submit">Excluir</button>
                                         </form>
+                                        @endcan
+
                                     </div>
                                 </td>
                             </tr>

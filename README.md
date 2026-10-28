@@ -163,8 +163,10 @@ De dentro do Docker, o Laravel acessa o MySQL pelo hostname `db`, que e o nome d
 Para conectar ao MySQL:
 
 ```bash
-docker compose exec db mysql -u sippSELECT user, host FROM mysql.user;
-Na sua maquina, o MySQL tambem esta exposto em `localhost:3306`.
+docker compose exec db mysql -u sippulse -p sippulse
+```
+
+Na sua maquina, o MySQL esta exposto em `127.0.0.1:3308`. Entre containers, use o servico `db` na porta `3306`.
 
 ## 8. Como iniciar um projeto novo com Docker?
 

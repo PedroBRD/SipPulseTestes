@@ -9,11 +9,21 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    // Função para definir as permissões para cada função
+    // https://www.itsolutionstuff.com/post/laravel-11-user-roles-and-permissions-tutorialexample.html
+    public function __construct() {
+        $this->middleware('permission:view')->only(['index', 'show']);
+        $this->middleware('permission:create')->only(['create', 'store']);
+        $this->middleware('permission:edit')->only(['edit', 'update']);
+        $this->middleware('permission:delete')->only(['destroy']);
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        $this->authorize('view');
         $users = User::all();
         //dd($users);
         //dd('dentro da index');
@@ -25,6 +35,7 @@ class UserController extends Controller
      */
     public function create()
     {
+        $this->authorize('create');
         return view('Users/createUser');
     }
 
@@ -33,6 +44,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create');
         $data = $request->all();
         //dd($data);
 
@@ -50,6 +62,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
+        $this->authorize('view');
         //dd('dentro da show');
         $user = User::find($id);
 
@@ -65,6 +78,7 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
+        $this->authorize('edit');
         $user = User::findOrFail($id);
         if(!isset($user) || is_null($user)) {
             dd('Usuário não existe');
@@ -77,6 +91,7 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $this->authorize('edit');
         $user = User::findOrFail($id);
         //dd($user->get('password'));
         //dd($user);
@@ -104,6 +119,7 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
+        $this->authorize('delete');
         $user = User::find($id);
         if(!isset($user) || is_null($user)) {
             dd('Usuário não existe');

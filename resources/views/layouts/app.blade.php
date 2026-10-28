@@ -76,7 +76,8 @@
         .login-card h1 { margin: 0 0 1.5rem; text-align: center; font-size: 1.8rem; }
         .form-field { display: grid; gap: .4rem; margin-bottom: 1rem; }
         .form-field label { color: var(--navy); font-weight: 700; }
-        .form-field input, .panel form > input:not([type="hidden"]):not([type="checkbox"]),
+        .form-field input, .form-field select, .form-field textarea,
+        .panel form > input:not([type="hidden"]):not([type="checkbox"]),
         .panel form > select, .panel form > textarea {
             width: 100%;
             min-height: 44px;
@@ -86,7 +87,8 @@
             background: #fff;
             color: var(--ink);
         }
-        .form-field input:focus, .panel form > input:focus, .panel form > select:focus,
+        .form-field input:focus, .form-field select:focus, .form-field textarea:focus,
+        .panel form > input:focus, .panel form > select:focus,
         .panel form > textarea:focus { outline: 3px solid rgba(0, 86, 179, .15); border-color: var(--blue); }
         .panel form > label { display: block; margin: .85rem 0 .3rem; color: var(--navy); font-weight: 700; }
         .panel form > input[type="checkbox"] { width: 1rem; height: 1rem; margin: .35rem 0 0 .35rem; accent-color: var(--blue); }
